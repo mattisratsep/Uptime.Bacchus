@@ -1,24 +1,29 @@
 <template>
-    <b-container>
-        <b-row>
-            <b-list-group horizontal>
-                <b-list-group-item v-for="category in categories"
-                                   @click="addFilter(category)" 
-                                   :key="category"  
-                                   :active="filters.includes(category)"  
-                                   button variant="light">{{category}}</b-list-group-item>
-            </b-list-group>
-            <b-button @click="clearFilter"
-                      squared variant="outline-info" 
-                      style="margin-left: 10px;">
-            Clear filter
-            </b-button>
-        </b-row>
+        <div>
+            <b-container v-if="store.isLoading">
+                <b-spinner variant="primary" label="Text Centered"></b-spinner>
+            </b-container>
+            <b-container v-else>
+                <b-row>
+                    <b-list-group horizontal>
+                        <b-list-group-item v-for="category in categories"
+                                            @click="addFilter(category)"
+                                            :key="category"
+                                            :active="filters.includes(category)"
+                                            button variant="light">{{category}}</b-list-group-item>
+                    </b-list-group>
+                    <b-button @click="clearFilter"
+                                squared variant="outline-info"
+                                style="margin-left: 10px;">
+                        Clear filter
+                    </b-button>
+                </b-row>
 
-        <b-row>
-            <auction-item v-for="item in loadedItems" :key="item.productId" :item="item" />
-        </b-row>
-    </b-container>  
+                <b-row>
+                    <auction-item v-for="item in loadedItems" :key="item.productId" :item="item" />
+                </b-row>
+            </b-container>
+        </div>  
 </template>
 
 <script>

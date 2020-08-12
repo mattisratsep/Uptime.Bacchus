@@ -1,7 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,8 +13,10 @@ namespace Uptime.Bacchus.Services
 {
     public class AuctionService : IAuctionService
     {
-        public AuctionService()
+        private IConfiguration Configuration { get; set; }
+        public AuctionService(IConfiguration configuration)
         {
+            Configuration = configuration;
         }
 
         public async Task<List<AuctionItem>> GetAuctionData()
@@ -27,7 +27,7 @@ namespace Uptime.Bacchus.Services
 
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("http://uptime-auction-api.azurewebsites.net/");
+                    client.BaseAddress = new Uri(Configuration["UpdtimeAuctionEndpoint"]);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

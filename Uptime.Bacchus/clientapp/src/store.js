@@ -6,7 +6,8 @@ const store = {
         auctionItems: [],
         bidSuccess: false,
         bidError: false,
-        categories:[]
+        categories: [],
+        isLoading: true
     },
     methods: {
         
@@ -23,8 +24,11 @@ const store = {
                         }
                     }
 
-                }).finally(() => this.assembleAuctionCategorys())
-
+                }).finally(() => {
+                    this.assembleAuctionCategorys();
+                    store.data.isLoading = false;
+                })
+            
         },
 
         auctionFinished(productId) {
