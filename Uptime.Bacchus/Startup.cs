@@ -25,9 +25,29 @@ namespace Uptime.Bacchus
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<AuctionDbContext>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "Cors",
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:8080",
+                                                          "http://localhost:8081")
+                                              .AllowAnyHeader()
+                                              .AllowAnyMethod();
+                                  });
+            });
+
+            services.AddControllers();
+
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp";
+            });
+
             services.AddSwaggerGen(conf =>
             {
                 conf.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -37,33 +57,28 @@ namespace Uptime.Bacchus
                     Description = "API for UI"
                 });
             });
-            services.AddDbContext<AuctionDbContext>();
-
-            services.AddControllers();
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp";
-            });
 
             services.AddTransient<IAuctionService, AuctionService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bacchus API"); });
-            app.UseRouting();
-            app.UseSpaStaticFiles();
 
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 scope.ServiceProvider.GetService<AuctionDbContext>().Database.EnsureCreatedAsync();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bacchus API"); });
+
+            app.UseRouting();
+            app.UseCors("Cors");
+            app.UseSpaStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {

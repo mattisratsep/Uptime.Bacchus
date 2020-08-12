@@ -1,14 +1,4 @@
-﻿import Axios from 'axios';
-
-const client = Axios.create({
-    timeout: 120 * 1000,
-    headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
-        'Content-Type': 'application/json'
-    },
-});
-
+﻿import client from './client';
 
 const store = {
 
